@@ -1,39 +1,35 @@
-using NUnit.Framework;
 using OpenQA.Selenium.Chrome;
-
 using OpenQA.Selenium;
-
-using OpenQA.Selenium.Firefox;
-
-using System;
-
-using System.Collections.ObjectModel;
-
-using System.IO;
-using System.Text;
-using OpenQA.Selenium.BiDi.Communication;
-using System.Data;
+using NUnit.Framework.Internal;
+using NLog;
+using Logger = NLog.Logger;
+using OpenQA.Selenium.DevTools;
 
 [TestFixture]
 public class YourTestClass
 {
     private ChromeDriver driver;
-
+    private IDevTools devTools;
     [OneTimeSetUp]
     public void Setup()
     {
         driver = new ChromeDriver();
         // Initialize your driver here
+
+
     }
 
     [Test]
-    public void registerclient()
+    public async Task registerclient()
     {
+        Logger logger = LogManager.GetCurrentClassLogger();
+
+
         driver.Navigate().GoToUrl("https://localhost/interface/smart/register-app.php");
         driver.FindElement(By.Id("details-button")).Click();
         driver.FindElement(By.Id("proceed-link")).Click();
         driver.FindElement(By.Id("appTypePublic")).Click();
-        driver.FindElement(By.Id("appName")).SendKeys("appName7");
+        driver.FindElement(By.Id("appName")).SendKeys("appName8");
         driver.FindElement(By.Id("contactEmail")).SendKeys("ajab.nagesh@gmail.com");
         driver.FindElement(By.Id("redirectUri")).SendKeys("https://localhost/swagger/oauth2-redirect.html");
         driver.FindElement(By.Id("launchUri")).SendKeys("https://localhost/swagger/index.html");
@@ -58,7 +54,7 @@ public class YourTestClass
         driver.FindElement(By.Name("scope[user/Medication.read]")).Click();
         driver.FindElement(By.Name("scope[user/MedicationRequest.read]")).Click();
         driver.FindElement(By.Name("scope[user/Observation.read]")).Click();
-        driver.FindElement(By.Name("scope[user/Organization.read]")).Click();        
+        driver.FindElement(By.Name("scope[user/Organization.read]")).Click();
         driver.FindElement(By.Name("scope[user/Organization.write]")).Click();
         driver.FindElement(By.Name("scope[user/Patient.read]")).Click();
         driver.FindElement(By.Name("scope[user/Patient.write]")).Click();
@@ -72,21 +68,16 @@ public class YourTestClass
         driver.FindElement(By.Id("submit")).Click();
 
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-        System.Threading.Thread.Sleep(3000);
+        Thread.Sleep(3000);
 
         var clientid = driver.FindElement(By.Id("clientID")).GetAttribute("value");
-        var audURL=driver.FindElement(By.Id("audURL")).GetAttribute("value");
+        var audURL = driver.FindElement(By.Id("audURL")).GetAttribute("value");
 
-        StringBuilder sb=new StringBuilder();
-        sb.AppendLine(clientid);
-        sb.AppendLine(audURL);
-        File.WriteAllText("newclient.txt", sb.ToString());
-
-        Console.WriteLine("clientid is "+ clientid);
-        Console.WriteLine("audience url is " +audURL);
+        logger.Info("client id is " + clientid);
+        logger.Info("audience url is " + audURL);
 
         driver.Navigate().GoToUrl("https://localhost/swagger");
-        driver.FindElement(By.XPath( "//span[text()='Authorize']")).Click();
+        driver.FindElement(By.XPath("//span[text()='Authorize']")).Click();
         //driver.FindElement(By.ClassName("btn authorize unlocked")).Click();
         driver.FindElement(By.Id("client_id")).SendKeys(clientid);
 
@@ -96,18 +87,18 @@ public class YourTestClass
 
         driver.FindElement(By.XPath("//p[text()='system/AllergyIntolerance.read']")).Click();
         driver.FindElement(By.XPath("//p[text()='user/AllergyIntolerance.read']")).Click();
-        
+
         driver.FindElement(By.XPath("//p[text()='user/appointment.read']")).Click();
-        
+
         driver.FindElement(By.XPath("//p[text()='user/Binary.read']")).Click();
         driver.FindElement(By.XPath("//p[text()='system/Binary.read']")).Click();
-        
+
         driver.FindElement(By.XPath("//p[text()='user/CarePlan.read']")).Click();
         driver.FindElement(By.XPath("//p[text()='system/CarePlan.read']")).Click();
 
         driver.FindElement(By.XPath("//p[text()='user/CareTeam.read']")).Click();
         driver.FindElement(By.XPath("//p[text()='system/CareTeam.read']")).Click();
-        
+
         driver.FindElement(By.XPath("//p[text()='user/Condition.read']")).Click();
         driver.FindElement(By.XPath("//p[text()='system/Condition.read']")).Click();
 
@@ -224,8 +215,8 @@ public class YourTestClass
         driver.FindElement(By.XPath("//p[text()='api:port']")).Click();
 
         driver.FindElement(By.XPath("//button[text()='Authorize']")).Click();
-    }
 
+    }
 
 
     [OneTimeTearDown]
